@@ -51,6 +51,8 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "example:triage": "node examples/01-triage.ts",
     "example:moderation": "node examples/02-moderation.ts",
+    "example:extraction": "node examples/04-extraction.ts",
+    "example:chaining": "node examples/05-chaining.ts",
     "example:live": "node examples/03-live.ts"
   },
   "keywords": [

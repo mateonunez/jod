@@ -13,7 +13,28 @@ result.refundRequested; // boolean
 result.$confidence.department; // 0.83
 ```
 
-Built on the official [`@typesafe-ai/sdk`](https://docs.typesafe.ai/sdk/javascript). Retries, timeouts, backoff, logging, model listing, and the error taxonomy are the SDK's — `jod` re-exports them and adds only validation, projection, and fixtures.
+Built on the official [`@typesafe-ai/sdk`](https://docs.typesafe.ai/sdk/javascript). Retries, timeouts, backoff, logging, model listing, and the error taxonomy are the SDK's — `jod` re-exports them and adds only the state binding, validation, projection, and fixtures.
+
+## Compared to the SDK
+
+`jod` is not a superset. On capability the SDK is one, so here is the whole ledger.
+
+**What it adds** — all convenience, no new capability:
+
+| | `jod` | SDK |
+| --- | --- | --- |
+| State validated before you spend | `state: TicketState` runs locally and throws `JodStateError` with `issues`; **zero requests** | You pass any `EntryType` and find out from the model |
+| Uniform confidence | `$confidence`, typed to exactly the Choice and Score keys | `confidence` sits inside each answer and is **absent on Noul**, so a mixed question set needs narrowing |
+| Noul to boolean | `thresholds: { isUrgent: 0.8 }`; the probability stays in `$probabilities` | Returns the number; you threshold it |
+| Declare once | `semantics({ state, ask, config })`, then `.ask()` | `client.systemOne({ state, questions })` rebuilt at every call site |
+| Fixture replay | `fixtureFetch(recorded)` — a plain object | Injectable `config.fetch`, but you build the `Response` objects |
+
+**What it costs** — two real regressions against the SDK:
+
+- **No `APIPromise` accessors.** `ask()` awaits, so `withResponse()`, `asResponse()`, `.map()`, and `requestId` are gone.
+- **No runtime-dynamic question sets.** The SDK builds `questions` per call, so `criteria` can be computed at runtime. `jod`'s `ask` spec is fixed when you call `semantics()`. A follow-up that depends on an earlier answer is fine — that is a second `ask()` — but a dynamic *option set* is not expressible.
+
+**Verdict:** nothing here is impossible with `TypeSafeClient`; those five conveniences are roughly 40 lines in your app. Reach for `jod` when you want the state schema and the questions bound together and the projection for free, and skip it when you would rather own those 40 lines.
 
 ## Install
 
@@ -184,7 +205,7 @@ semantics({
 
 ## What jod is not
 
-- **Not a replacement for the SDK.** Everything below the schema layer is the SDK. If you only need one-off questions, use `TypeSafeClient` directly.
+- **Not a replacement for the SDK.** Everything below the schema layer is the SDK, and two SDK capabilities do not survive the trip — see [Compared to the SDK](#compared-to-the-sdk).
 - **Not a Zod replacement.** Validating an HTTP body, env var, or config with a model is slower, dearer, and non-deterministic. Use Zod there — it is free and exact.
 - **Not a generator or an agent.** Jev emits decisions, not text or code, and your code owns the control flow.
 - **Not multi-hop.** One question, one snap judgment.
@@ -237,9 +258,11 @@ Two repository secrets:
 ## Examples
 
 ```sh
-pnpm example:triage      # offline, fixtureFetch
-pnpm example:moderation  # offline, composite scoring
-pnpm example:live        # hits the API, needs TYPESAFE_API_KEY
+pnpm example:triage       # offline — three primitives, confidence-gated routing
+pnpm example:moderation   # offline — speculative fan-out, composite scoring
+pnpm example:extraction   # offline — closed sets with a `not_stated` escape hatch
+pnpm example:chaining     # offline — a follow-up request that needs the first answer
+pnpm example:live         # live  — hits the API, needs TYPESAFE_API_KEY
 ```
 
 ## License

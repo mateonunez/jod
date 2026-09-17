@@ -237,9 +237,11 @@ Two repository secrets:
 ## Examples
 
 ```sh
-pnpm example:triage      # offline, fixtureFetch
-pnpm example:moderation  # offline, composite scoring
-pnpm example:live        # hits the API, needs TYPESAFE_API_KEY
+pnpm example:triage       # offline — three primitives, confidence-gated routing
+pnpm example:moderation   # offline — speculative fan-out, composite scoring
+pnpm example:extraction   # offline — closed sets with a `not_stated` escape hatch
+pnpm example:chaining     # offline — a follow-up request that needs the first answer
+pnpm example:live         # live  — hits the API, needs TYPESAFE_API_KEY
 ```
 
 ## License

@@ -22,12 +22,13 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
     steps:
-      # RELEASE_TOKEN is a PAT so that CI runs on the release PR. Without it the
-      # PR is still opened, but its checks never start.
+      # GITHUB_TOKEN can only open a PR while "Allow GitHub Actions to create
+      # and approve pull requests" is enabled in the repo settings. That setting
+      # is the only reason a PAT was ever needed here.
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 

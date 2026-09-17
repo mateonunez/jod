@@ -30,6 +30,8 @@ jobs:
         run: |
           node examples/01-triage.ts
           node examples/02-moderation.ts
+          node examples/04-extraction.ts
+          node examples/05-chaining.ts
 
   e2e:
     name: Live E2E (manual)

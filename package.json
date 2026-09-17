@@ -1,0 +1,82 @@
+{
+  "name": "@mateonunez/jod",
+  "version": "0.0.0",
+  "description": "Semantic schemas over TypeSafe's Jev — validate the state locally, then project typed answers.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22.6.0",
+      "onFail": "error"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mateonunez/jod.git"
+  },
+  "homepage": "https://github.com/mateonunez/jod#readme",
+  "bugs": {
+    "url": "https://github.com/mateonunez/jod/issues"
+  },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "node scripts/clean.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "borp --coverage 'test/**/*.test.ts'",
+    "test:watch": "borp --watch 'test/**/*.test.ts'",
+    "test:e2e": "borp 'e2e/**/*.test.ts'",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "example:triage": "node examples/01-triage.ts",
+    "example:moderation": "node examples/02-moderation.ts",
+    "example:live": "node examples/03-live.ts"
+  },
+  "keywords": [
+    "zod",
+    "jev",
+    "typesafe",
+    "system-one",
+    "structured-output",
+    "semantic-validation"
+  ],
+  "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/node": "^24.0.0",
+    "borp": "^1.0.0",
+    "typescript": "^5.9.0",
+    "zod": "^4.6.5"
+  }
+}

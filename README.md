@@ -225,12 +225,13 @@ pnpm test:e2e    # live: real requests against the API, needs TYPESAFE_API_KEY
 
 Versions come from your commit types: `fix:` patches, `feat:` minors, and a breaking change (`feat!:`) bumps the minor rather than jumping to `1.0.0` while the package is pre-major. Types marked hidden in [`release-please-config.json`](./release-please-config.json) (`test`, `ci`, `chore`, `build`) stay out of the changelog.
 
-Two repository secrets:
+One repository secret:
 
 | Secret | Required | Why |
 | --- | --- | --- |
-| `NPM_TOKEN` | yes | An npm automation token with publish rights on `@mateonunez/jod`. |
-| `RELEASE_TOKEN` | recommended | A PAT. Release Please opens its PR with the workflow's token, and PRs made by `GITHUB_TOKEN` do not trigger workflows — without this, the release PR gets no CI. |
+| `NPM_TOKEN` | yes | An npm token with publish rights on `@mateonunez/jod`. The package does not exist on npm yet, so the token must be allowed to create it under the `@mateonunez` scope — a granular token restricted to existing packages fails on the first publish. |
+
+Release Please opens its PR with `GITHUB_TOKEN`, which needs **Allow GitHub Actions to create and approve pull requests** enabled under Settings → Actions → General. Two consequences worth knowing: the release PR carries no CI, because PRs opened with `GITHUB_TOKEN` do not trigger workflows (the publish job runs `pnpm check` before it publishes, so the gate still exists), and `gh workflow run Release` is how you retrigger a release by hand.
 
 `publishConfig.registry` is pinned to public npm on purpose: a machine whose global registry is a private mirror would otherwise publish to the wrong place. For the same reason the publish job passes `--access public` explicitly.
 
